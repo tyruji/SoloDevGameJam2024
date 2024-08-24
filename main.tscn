@@ -1,0 +1,159 @@
+[gd_scene load_steps=18 format=3 uid="uid://bmvlfxhntjcfu"]
+
+[ext_resource type="Script" path="res://Scripts/CameraHandler.cs" id="1_1ndtr"]
+[ext_resource type="Script" path="res://Scripts/WallHandler.cs" id="1_1xm8v"]
+[ext_resource type="Script" path="res://Scripts/PlayerAnimator.cs" id="2_4nwcb"]
+[ext_resource type="Script" path="res://Scripts/WallDrawer.cs" id="2_8kare"]
+[ext_resource type="Script" path="res://Scripts/Player.cs" id="2_w2oqs"]
+
+[sub_resource type="Gradient" id="Gradient_t1m8x"]
+offsets = PackedFloat32Array(0, 0.75974, 1)
+colors = PackedColorArray(0, 1, 1, 1, 0, 0.4, 0.266667, 1, 0, 1, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5fg70"]
+gradient = SubResource("Gradient_t1m8x")
+fill_to = Vector2(0.477064, 1)
+
+[sub_resource type="Gradient" id="Gradient_2gduh"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_hjdqj"]
+gradient = SubResource("Gradient_2gduh")
+
+[sub_resource type="Gradient" id="Gradient_2njh7"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rp8ux"]
+gradient = SubResource("Gradient_2njh7")
+
+[sub_resource type="Gradient" id="Gradient_4bius"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ndpxs"]
+gradient = SubResource("Gradient_4bius")
+
+[sub_resource type="Gradient" id="Gradient_ro0ps"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ted36"]
+gradient = SubResource("Gradient_ro0ps")
+
+[sub_resource type="Gradient" id="Gradient_02y8b"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.643319, 1, 0.614111, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6ut21"]
+gradient = SubResource("Gradient_02y8b")
+width = 192
+height = 384
+
+[node name="Main" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("1_1ndtr")
+
+[node name="Player" type="Node" parent="."]
+script = ExtResource("2_w2oqs")
+
+[node name="PlayerSprite" type="Sprite2D" parent="Player"]
+z_index = 1
+position = Vector2(0, 96)
+texture = SubResource("GradientTexture2D_5fg70")
+script = ExtResource("2_4nwcb")
+
+[node name="WallHandler" type="Node2D" parent="."]
+script = ExtResource("1_1xm8v")
+
+[node name="WallDrawer" type="Node2D" parent="."]
+script = ExtResource("2_8kare")
+_WallTexture = SubResource("GradientTexture2D_hjdqj")
+_EmptyTexture = SubResource("GradientTexture2D_rp8ux")
+
+[node name="wall1" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 32)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall2" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 96)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall3" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 160)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall4" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 224)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall5" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 288)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall6" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 352)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall7" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 416)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall8" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 480)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall9" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -224)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall10" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -160)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall11" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -96)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall12" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -32)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall13" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -480)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall14" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -416)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall15" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -352)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall16" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -288)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="Background" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -132)
+texture = SubResource("GradientTexture2D_6ut21")
