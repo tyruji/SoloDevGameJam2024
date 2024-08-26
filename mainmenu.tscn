@@ -1,0 +1,252 @@
+[gd_scene load_steps=24 format=3 uid="uid://di4eoqd7k3geq"]
+
+[ext_resource type="Script" path="res://Scripts/Background.cs" id="1_etmlv"]
+[ext_resource type="Script" path="res://Scripts/MainMenu.cs" id="1_h06k3"]
+[ext_resource type="PackedScene" uid="uid://bmvlfxhntjcfu" path="res://main.tscn" id="2_irej2"]
+[ext_resource type="Texture2D" uid="uid://bq24xbvkfv176" path="res://Textures/Slime/idle/0.png" id="4_svlml"]
+[ext_resource type="Texture2D" uid="uid://itps82ydtwql" path="res://Textures/Slime/slime_bounce/0.png" id="5_gvkwn"]
+[ext_resource type="Texture2D" uid="uid://cf5eke0p1am0i" path="res://Textures/Slime/slime_bounce/1.png" id="6_p6ge6"]
+[ext_resource type="Texture2D" uid="uid://ddngjp1vby4pw" path="res://Textures/Slime/slime_bounce/2.png" id="7_i4uuy"]
+[ext_resource type="Texture2D" uid="uid://chiy7wtfc7te3" path="res://Textures/Slime/slime_bounce/3.png" id="8_j0g0i"]
+[ext_resource type="Texture2D" uid="uid://bryt8uc7biuyo" path="res://Textures/Slime/slime_bounce/4.png" id="9_auu2n"]
+[ext_resource type="Texture2D" uid="uid://b7rj7k8yp1diq" path="res://Textures/Slime/slime_bounce/5.png" id="10_retnn"]
+[ext_resource type="Texture2D" uid="uid://d3xph5wdwk3om" path="res://Textures/Slime/idle/1.png" id="11_cd5i2"]
+[ext_resource type="Texture2D" uid="uid://dbiv648f37df8" path="res://Textures/pipes/Pipe1-empty.png" id="12_pif27"]
+
+[sub_resource type="Shader" id="Shader_jf17l"]
+code = "shader_type canvas_item;
+
+uniform sampler2D noise_tex : hint_default_black, repeat_enable;
+uniform vec2 world_pos;
+
+void fragment()
+{
+	COLOR.rgb = texture( noise_tex, .0001f * world_pos + UV ).rgb;
+}
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_44n6b"]
+frequency = 0.001
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_3f2ic"]
+width = 1920
+height = 1080
+generate_mipmaps = false
+seamless = true
+seamless_blend_skirt = 0.618
+noise = SubResource("FastNoiseLite_44n6b")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h6w70"]
+shader = SubResource("Shader_jf17l")
+shader_parameter/world_pos = Vector2(467, 238)
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_3f2ic")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ndj57"]
+frequency = 0.001
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_cix0d"]
+width = 1920
+height = 1080
+generate_mipmaps = false
+seamless = true
+seamless_blend_skirt = 0.618
+noise = SubResource("FastNoiseLite_ndj57")
+
+[sub_resource type="Animation" id="Animation_2bniv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_svlml")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_qmsd8"]
+resource_name = "bounce_left"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("5_gvkwn"), ExtResource("6_p6ge6"), ExtResource("7_i4uuy"), ExtResource("8_j0g0i"), ExtResource("9_auu2n"), ExtResource("10_retnn")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_enncc"]
+resource_name = "bounce_right"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("5_gvkwn"), ExtResource("6_p6ge6"), ExtResource("7_i4uuy"), ExtResource("8_j0g0i"), ExtResource("9_auu2n"), ExtResource("10_retnn")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_6fdkw"]
+resource_name = "idle"
+length = 6.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("4_svlml"), ExtResource("11_cd5i2")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xj5s3"]
+_data = {
+"RESET": SubResource("Animation_2bniv"),
+"bounce_left": SubResource("Animation_qmsd8"),
+"bounce_right": SubResource("Animation_enncc"),
+"idle": SubResource("Animation_6fdkw")
+}
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h06k3")
+_GameScene = ExtResource("2_irej2")
+
+[node name="Background2" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.12549)
+texture_repeat = 2
+material = SubResource("ShaderMaterial_h6w70")
+position = Vector2(467, 238)
+texture = SubResource("NoiseTexture2D_cix0d")
+script = ExtResource("1_etmlv")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 105.0
+offset_right = 332.0
+offset_bottom = 201.0
+theme_override_font_sizes/font_size = 64
+text = "PLAY"
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+z_index = 1
+texture_filter = 1
+position = Vector2(769, 286)
+scale = Vector2(7.965, 7.965)
+texture = ExtResource("4_svlml")
+flip_h = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../PlayerSprite")
+libraries = {
+"": SubResource("AnimationLibrary_xj5s3")
+}
+autoplay = "idle"
+speed_scale = 10.0
+
+[node name="Pipe1-empty" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(713, 512)
+rotation = -3.14159
+scale = Vector2(8, 8)
+texture = ExtResource("12_pif27")
+
+[node name="Pipe1-empty2" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(713, 0)
+rotation = -3.14159
+scale = Vector2(8, 8)
+texture = ExtResource("12_pif27")
+
+[node name="Pipe1-empty3" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(1225, 509)
+rotation = -3.14159
+scale = Vector2(8, 8)
+texture = ExtResource("12_pif27")
+
+[node name="Pipe1-empty4" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(1225, -2.99997)
+rotation = -3.14159
+scale = Vector2(8, 8)
+texture = ExtResource("12_pif27")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 212.0
+offset_right = 693.0
+offset_bottom = 593.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 32
+text = "Use A, D or
+Left and Right
+arrows to move.
+
+Avoid the red stuff, it will
+kill you.
+
+Good luck!"
+
+[connection signal="pressed" from="Button" to="." method="Play"]
