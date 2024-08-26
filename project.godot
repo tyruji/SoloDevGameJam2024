@@ -43,3 +43,9 @@ right={
 [rendering]
 
 environment/defaults/default_clear_color=Color(0.185384, 0.134976, 0.217956, 1)
+config/features=PackedStringArray("4.2", "Forward Plus")
+config/icon="res://icon.svg"
+
+[dotnet]
+
+project/assembly_name="Solo Dev Game Jam 2024"
