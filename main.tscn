@@ -1,0 +1,464 @@
+[gd_scene load_steps=57 format=3 uid="uid://bmvlfxhntjcfu"]
+
+[ext_resource type="Script" path="res://Scripts/CameraHandler.cs" id="1_1ndtr"]
+[ext_resource type="Script" path="res://Scripts/WallHandler.cs" id="1_1xm8v"]
+[ext_resource type="Texture2D" uid="uid://hugvvfnpntoh" path="res://Textures/chaser/0.png" id="1_b1su4"]
+[ext_resource type="Script" path="res://Scripts/Chaser.cs" id="1_die0e"]
+[ext_resource type="Script" path="res://Scripts/PlayerAnimator.cs" id="2_4nwcb"]
+[ext_resource type="Script" path="res://Scripts/WallDrawer.cs" id="2_8kare"]
+[ext_resource type="Texture2D" uid="uid://dt23j213mfi0h" path="res://Textures/chaser/1.png" id="2_i333q"]
+[ext_resource type="Script" path="res://Scripts/Player.cs" id="2_w2oqs"]
+[ext_resource type="Script" path="res://Scripts/Background.cs" id="3_7i0t4"]
+[ext_resource type="Texture2D" uid="uid://itps82ydtwql" path="res://Textures/Slime/slime_bounce/0.png" id="5_8kmt0"]
+[ext_resource type="Texture2D" uid="uid://cf5eke0p1am0i" path="res://Textures/Slime/slime_bounce/1.png" id="6_obtts"]
+[ext_resource type="Texture2D" uid="uid://ddngjp1vby4pw" path="res://Textures/Slime/slime_bounce/2.png" id="7_lc11v"]
+[ext_resource type="Texture2D" uid="uid://chiy7wtfc7te3" path="res://Textures/Slime/slime_bounce/3.png" id="8_0f6td"]
+[ext_resource type="Texture2D" uid="uid://bryt8uc7biuyo" path="res://Textures/Slime/slime_bounce/4.png" id="9_kidad"]
+[ext_resource type="Texture2D" uid="uid://b7rj7k8yp1diq" path="res://Textures/Slime/slime_bounce/5.png" id="10_ufl31"]
+[ext_resource type="Texture2D" uid="uid://bq24xbvkfv176" path="res://Textures/Slime/idle/0.png" id="11_epqcd"]
+[ext_resource type="Texture2D" uid="uid://d3xph5wdwk3om" path="res://Textures/Slime/idle/1.png" id="12_spexe"]
+[ext_resource type="Texture2D" uid="uid://6d5mncesvpl5" path="res://Textures/pipes/empty.png" id="14_2oru7"]
+[ext_resource type="Texture2D" uid="uid://buuyjkxdhmqan" path="res://Textures/pipes/Pipe1.png" id="14_xhbpc"]
+[ext_resource type="Texture2D" uid="uid://p1kdps2x1vr6" path="res://Textures/pipes/Pipe2.png" id="15_xq2rk"]
+[ext_resource type="Texture2D" uid="uid://r3803vr801u" path="res://Textures/pipes/Pipe3.png" id="16_ycbdv"]
+[ext_resource type="Texture2D" uid="uid://dbiv648f37df8" path="res://Textures/pipes/Pipe1-empty.png" id="17_gvg17"]
+[ext_resource type="PackedScene" uid="uid://blbrel3bd0eyg" path="res://ui.tscn" id="19_jtqip"]
+[ext_resource type="AudioStream" uid="uid://by7ngkbab04ag" path="res://Music/music.mp3" id="21_qot6k"]
+[ext_resource type="Script" path="res://Scripts/SoundHandler.cs" id="21_rhkde"]
+[ext_resource type="AudioStream" uid="uid://cxsqrtkk2w7w6" path="res://sfx/bounce.wav" id="22_rh31d"]
+[ext_resource type="Texture2D" uid="uid://t2wod65prvxf" path="res://Textures/Slime/base.png" id="24_c4lxn"]
+[ext_resource type="AudioStream" uid="uid://bkm7nx5ttsqcs" path="res://sfx/hit.wav" id="24_gmsf5"]
+
+[sub_resource type="Shader" id="Shader_aqch5"]
+code = "shader_type canvas_item;
+
+uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
+
+uniform vec3 color : source_color;
+uniform float lightness_threshold = .2f;
+
+void vertex() {
+	// Called for every vertex the material is visible on.
+}
+
+void fragment() {
+	vec4 screen_col = texture( SCREEN_TEXTURE, SCREEN_UV );
+	
+	float lightness = .33f * ( screen_col.r + screen_col.g + screen_col.b );
+	
+	COLOR = vec4( screen_col.rgb * color, 1.0 );
+	
+	if( lightness < lightness_threshold )
+	{
+		COLOR = screen_col;
+	}
+	COLOR.a = texture( TEXTURE, UV ).a;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fcol3"]
+shader = SubResource("Shader_aqch5")
+shader_parameter/color = Color(1, 0.105882, 0.282353, 1)
+shader_parameter/lightness_threshold = 0.775
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_cd43s"]
+frames = 2
+frame_0/texture = ExtResource("1_b1su4")
+frame_0/duration = 0.2
+frame_1/texture = ExtResource("2_i333q")
+frame_1/duration = 0.2
+
+[sub_resource type="Shader" id="Shader_76s7a"]
+code = "shader_type canvas_item;
+
+uniform sampler2D noise_tex : hint_default_black, repeat_enable;
+uniform vec2 world_pos;
+
+void fragment()
+{
+	COLOR.rgb = texture( noise_tex, .0001f * world_pos + UV ).rgb;
+}
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ndj57"]
+frequency = 0.001
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_cix0d"]
+width = 1920
+height = 1080
+generate_mipmaps = false
+seamless = true
+seamless_blend_skirt = 0.618
+noise = SubResource("FastNoiseLite_ndj57")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nrpog"]
+shader = SubResource("Shader_76s7a")
+shader_parameter/world_pos = Vector2(0, 0)
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_cix0d")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_44n6b"]
+frequency = 0.001
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_3f2ic"]
+width = 1920
+height = 1080
+generate_mipmaps = false
+seamless = true
+seamless_blend_skirt = 0.618
+noise = SubResource("FastNoiseLite_44n6b")
+
+[sub_resource type="Curve" id="Curve_olvak"]
+_data = [Vector2(0, 0), 0.0, 5.43956, 0, 0, Vector2(0.1, 1), 0.43956, 0.43956, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_w6w7c"]
+curve = SubResource("Curve_olvak")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wv2gh"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 32.0
+direction = Vector3(0, 0, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 100.0
+gravity = Vector3(0, 0, 0)
+scale_min = 10.0
+scale_max = 10.0
+scale_curve = SubResource("CurveTexture_w6w7c")
+color = Color(0.721569, 0.988235, 0.796078, 1)
+
+[sub_resource type="Curve" id="Curve_83x4x"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.573333, 0.549451), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_nhxu0"]
+curve = SubResource("Curve_83x4x")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_knf03"]
+lifetime_randomness = 0.2
+particle_flag_disable_z = true
+gravity = Vector3(0, 0, 0)
+scale_min = 0.8
+scale_max = 0.8
+color = Color(1, 1, 1, 0.0705882)
+alpha_curve = SubResource("CurveTexture_nhxu0")
+
+[sub_resource type="Animation" id="Animation_2bniv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("11_epqcd")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_qmsd8"]
+resource_name = "bounce_left"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("5_8kmt0"), ExtResource("6_obtts"), ExtResource("7_lc11v"), ExtResource("8_0f6td"), ExtResource("9_kidad"), ExtResource("10_ufl31")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_enncc"]
+resource_name = "bounce_right"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("5_8kmt0"), ExtResource("6_obtts"), ExtResource("7_lc11v"), ExtResource("8_0f6td"), ExtResource("9_kidad"), ExtResource("10_ufl31")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_6fdkw"]
+resource_name = "idle"
+length = 6.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("11_epqcd"), ExtResource("12_spexe")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xj5s3"]
+_data = {
+"RESET": SubResource("Animation_2bniv"),
+"bounce_left": SubResource("Animation_qmsd8"),
+"bounce_right": SubResource("Animation_enncc"),
+"idle": SubResource("Animation_6fdkw")
+}
+
+[sub_resource type="Gradient" id="Gradient_2gduh"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_hjdqj"]
+gradient = SubResource("Gradient_2gduh")
+
+[sub_resource type="Gradient" id="Gradient_4bius"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ndpxs"]
+gradient = SubResource("Gradient_4bius")
+
+[sub_resource type="Gradient" id="Gradient_ro0ps"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ted36"]
+gradient = SubResource("Gradient_ro0ps")
+
+[sub_resource type="Gradient" id="Gradient_02y8b"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.643319, 1, 0.614111, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6ut21"]
+gradient = SubResource("Gradient_02y8b")
+width = 192
+height = 384
+
+[node name="Main" type="Node2D"]
+
+[node name="Chaser" type="Sprite2D" parent="."]
+z_index = 2
+material = SubResource("ShaderMaterial_fcol3")
+position = Vector2(0, 512)
+texture = SubResource("AnimatedTexture_cd43s")
+script = ExtResource("1_die0e")
+_SecondMaxSpeed = 270.0
+_FirstSpeedTime = 5.0
+_SecondSpeedTime = 15.0
+
+[node name="Node2D" type="Node2D" parent="Chaser"]
+position = Vector2(0, -256)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("1_1ndtr")
+
+[node name="Background2" type="Sprite2D" parent="Camera2D"]
+modulate = Color(1, 1, 1, 0.101961)
+texture_repeat = 2
+material = SubResource("ShaderMaterial_nrpog")
+texture = SubResource("NoiseTexture2D_3f2ic")
+script = ExtResource("3_7i0t4")
+
+[node name="Player" type="Node" parent="."]
+script = ExtResource("2_w2oqs")
+
+[node name="PlayerSprite" type="Sprite2D" parent="Player"]
+z_index = 1
+texture_filter = 1
+position = Vector2(0, 96)
+texture = ExtResource("11_epqcd")
+flip_h = true
+script = ExtResource("2_4nwcb")
+_TransitionType = 8
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="Player/PlayerSprite"]
+emitting = false
+amount = 128
+process_material = SubResource("ParticleProcessMaterial_wv2gh")
+one_shot = true
+speed_scale = 1.2
+explosiveness = 1.0
+
+[node name="trail" type="GPUParticles2D" parent="Player/PlayerSprite"]
+z_as_relative = false
+amount = 32
+process_material = SubResource("ParticleProcessMaterial_knf03")
+texture = ExtResource("24_c4lxn")
+lifetime = 0.2
+randomness = 1.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
+root_node = NodePath("../PlayerSprite")
+libraries = {
+"": SubResource("AnimationLibrary_xj5s3")
+}
+autoplay = "idle"
+speed_scale = 10.0
+
+[node name="WallHandler" type="Node2D" parent="."]
+script = ExtResource("1_1xm8v")
+
+[node name="WallDrawer" type="Node2D" parent="."]
+script = ExtResource("2_8kare")
+_WallTexture = SubResource("GradientTexture2D_hjdqj")
+_EmptyTexture = ExtResource("14_2oru7")
+_PipeTexture1 = ExtResource("14_xhbpc")
+_PipeTexture2 = ExtResource("15_xq2rk")
+_PipeTexture3 = ExtResource("16_ycbdv")
+_PipeTexture4 = ExtResource("17_gvg17")
+
+[node name="wall1" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 32)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall2" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 96)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall3" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 160)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall4" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 224)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall5" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 288)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall6" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 352)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall7" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 416)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall8" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, 480)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall9" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -224)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall10" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -160)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall11" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -96)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall12" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -32)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall13" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -480)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall14" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -416)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="wall15" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -352)
+texture = SubResource("GradientTexture2D_ndpxs")
+
+[node name="wall16" type="Sprite2D" parent="WallDrawer"]
+visible = false
+position = Vector2(64, -288)
+texture = SubResource("GradientTexture2D_ted36")
+
+[node name="Background" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -132)
+texture = SubResource("GradientTexture2D_6ut21")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UI" parent="CanvasLayer" instance=ExtResource("19_jtqip")]
+
+[node name="SoundHandler" type="Node" parent="." node_paths=PackedStringArray("_Player", "_Bounce", "_Hit")]
+script = ExtResource("21_rhkde")
+_Player = NodePath("../Player")
+_Bounce = NodePath("bounce")
+_Hit = NodePath("hit")
+
+[node name="music" type="AudioStreamPlayer" parent="SoundHandler"]
+stream = ExtResource("21_qot6k")
+autoplay = true
+
+[node name="bounce" type="AudioStreamPlayer" parent="SoundHandler"]
+stream = ExtResource("22_rh31d")
+volume_db = -15.0
+pitch_scale = 2.0
+
+[node name="hit" type="AudioStreamPlayer" parent="SoundHandler"]
+stream = ExtResource("24_gmsf5")
+volume_db = 5.0
